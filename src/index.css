@@ -1,0 +1,33 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer components {
+    .Toastify__toast {
+        @apply rounded-lg !px-2 !py-2 text-sm text-slate-100 bg-zinc-900 shadow-lg border-l-4 border-sky-500 backdrop-blur-md;
+    }
+
+    .Toastify__toast--success {
+        @apply border-green-500 bg-green-900;
+    }
+
+    .Toastify__toast--error {
+        @apply border-red-500 bg-red-900;
+    }
+
+    .Toastify__toast--warning {
+        @apply border-yellow-400 bg-yellow-900;
+    }
+
+    .Toastify__toast--info {
+        @apply border-sky-500 bg-sky-900;
+    }
+
+    .Toastify__close-button {
+        @apply text-slate-200 hover:text-white transition;
+    }
+
+    .Toastify__progress-bar {
+        @apply bg-white/80;
+    }
+}

@@ -18,8 +18,21 @@ const Main = () => {
     const [showShare, setShowShare] = useState(false);
     const [shareEmail, setShareEmail] = useState('');
     const popupRef = useRef(null);
-
+    const [editingListId, setEditingListId] = useState(null);
+    const [editedListTitle, setEditedListTitle] = useState('');
     const bdata = allboard.boards[allboard.active];
+
+    const updateListTitle = (listId, newTitle) => {
+        const updatedBoard = { ...allboard };
+        const listIndex = updatedBoard.boards[updatedBoard.active].list.findIndex(l => l.id === listId);
+        if (listIndex !== -1) {
+            updatedBoard.boards[updatedBoard.active].list[listIndex].title = newTitle;
+            setAllBoard(updatedBoard);
+        }
+        setEditingListId(null);
+        setEditedListTitle('');
+    };
+
 
     useEffect(() => {
         localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(allboard));
@@ -99,6 +112,17 @@ const Main = () => {
         setShowShare(false);
     };
 
+    const deleteCard = (listId, cardId) => {
+        const updatedBoard = { ...allboard };
+        const listIndex = updatedBoard.boards[updatedBoard.active].list.findIndex(l => l.id === listId);
+        if (listIndex !== -1) {
+            updatedBoard.boards[updatedBoard.active].list[listIndex].items =
+                updatedBoard.boards[updatedBoard.active].list[listIndex].items.filter(i => i.id !== cardId);
+            setAllBoard(updatedBoard);
+        }
+    };
+
+
     return (
         <div
             className="flex flex-col rounded-md m-1 h-[calc(100vh-3rem)] w-full"
@@ -142,9 +166,23 @@ const Main = () => {
                                 className="bg-black rounded-md p-2 h-fit"
                             >
                                 <div className="flex justify-between items-center mb-2 relative">
-                                    <span className="text-white font-medium text-sm sm:text-base">
-                                        {list.title}
-                                    </span>
+                                    {editingListId === list.id ? (
+                                        <input
+                                            type="text"
+                                            className="bg-zinc-800 text-white text-sm p-1 rounded w-full outline-none mr-2"
+                                            value={editedListTitle}
+                                            autoFocus
+                                            onChange={(e) => setEditedListTitle(e.target.value)}
+                                            onBlur={() => updateListTitle(list.id, editedListTitle)}
+                                            onKeyDown={(e) => {
+                                                if (e.key === 'Enter') updateListTitle(list.id, editedListTitle);
+                                            }}
+                                        />
+                                    ) : (
+                                        <span className="text-white font-medium text-sm sm:text-base">
+                                            {list.title}
+                                        </span>
+                                    )}
 
                                     <div className="relative">
                                         <button
@@ -157,15 +195,26 @@ const Main = () => {
                                         </button>
 
                                         {openListMenuId === list.id && (
-                                            <div className="absolute right-0 top-full mt-1 bg-zinc-900 text-white rounded shadow-lg z-20 p-2 w-24">
+                                            <div className="absolute right-0 top-full mt-1 bg-zinc-900 text-white rounded shadow-lg z-20 p-2 w-32">
+                                                <button
+                                                    onClick={() => {
+                                                        setEditingListId(list.id);
+                                                        setEditedListTitle(list.title);
+                                                        setOpenListMenuId(null);
+                                                    }}
+                                                    className="flex justify-between gap-2 items-center w-full text-xs sm:text-sm text-blue-400 hover:text-blue-500"
+                                                >
+                                                    Edit Title <RiEdit2Line size={16} />
+                                                </button>
+                                                <hr className="my-1 border-white" />
                                                 <button
                                                     onClick={() => {
                                                         deleteList(list.id);
                                                         setOpenListMenuId(null);
                                                     }}
-                                                    className="flex gap-2 items-center w-full text-red-400 hover:text-red-500 text-xs sm:text-sm"
+                                                    className="flex justify-between gap-2 items-center w-full text-xs sm:text-sm text-red-400 hover:text-red-500"
                                                 >
-                                                    Delete <RiDeleteBin5Fill size={14} />
+                                                    Delete <RiDeleteBin5Fill size={16} />
                                                 </button>
                                             </div>
                                         )}
@@ -188,8 +237,8 @@ const Main = () => {
                                                                 {...provided.draggableProps}
                                                                 {...provided.dragHandleProps}
                                                                 className={`p-2 border rounded-md flex justify-between items-center gap-2 cursor-pointer 
-                            ${snapshot.isDragging ? 'bg-zinc-600 border-gray-500' : 'bg-zinc-700 border-zinc-900 hover:border-gray-500'}
-                            text-xs sm:text-sm`}
+        ${snapshot.isDragging ? 'bg-zinc-600 border-gray-500' : 'bg-zinc-700 border-zinc-900 hover:border-gray-500'}
+        text-xs sm:text-sm`}
                                                             >
                                                                 {editingCard.listId === list.id && editingCard.cardId === item.id ? (
                                                                     <input
@@ -206,18 +255,27 @@ const Main = () => {
                                                                 ) : (
                                                                     <>
                                                                         <span className="text-white flex-1 truncate">{item.title}</span>
-                                                                        <button
-                                                                            className="hover:bg-gray-600 p-1 rounded-sm"
-                                                                            onClick={() => {
-                                                                                setEditingCard({ listId: list.id, cardId: item.id });
-                                                                                setEditedTitle(item.title);
-                                                                            }}
-                                                                        >
-                                                                            <RiEdit2Line size={14} className="text-white" />
-                                                                        </button>
+                                                                        <div className='flex gap-2 items-center'>
+                                                                            <button
+                                                                                onClick={() => {
+                                                                                    deleteCard(list.id, item.id);
+                                                                                }}
+                                                                            >
+                                                                                <RiDeleteBin5Fill size={18} className="text-red-400 hover:text-red-500" />
+                                                                            </button>
+                                                                            <button
+                                                                                onClick={() => {
+                                                                                    setEditingCard({ listId: list.id, cardId: item.id });
+                                                                                    setEditedTitle(item.title);
+                                                                                }}
+                                                                            >
+                                                                                <RiEdit2Line size={18} className="text-blue-400 hover:text-blue-500" />
+                                                                            </button>
+                                                                        </div>
                                                                     </>
                                                                 )}
                                                             </div>
+
                                                         )}
                                                     </Draggable>
                                                 ))}

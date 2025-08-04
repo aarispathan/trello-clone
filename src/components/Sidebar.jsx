@@ -165,7 +165,7 @@ const Sidebar = () => {
                                     <div className="flex gap-2 ml-2">
                                         <button
                                             onClick={() => handleEditBoard(i, board.name)}
-                                            className="text-green-300 hover:text-green-500"
+                                            className="text-blue-400 hover:text-blue-500"
                                             title="Edit board"
                                         >
                                             <RiEdit2Line size={16} />

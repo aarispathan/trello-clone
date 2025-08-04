@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { X, Plus } from 'react-feather';
+import { GoPlus } from "react-icons/go";
 
 const AddList = ({ getlist }) => {
     const [list, setList] = useState('');
@@ -40,7 +41,7 @@ const AddList = ({ getlist }) => {
                             className="hover:bg-gray-600 p-1 rounded"
                             title="Cancel"
                         >
-                            <X size={16} />
+                            <GoPlus size={20} />
                         </button>
                     </div>
                 </div>
@@ -49,7 +50,7 @@ const AddList = ({ getlist }) => {
                     onClick={() => setShow(true)}
                     className="flex items-center justify-center w-full space-x-2 text-sm text-white hover:bg-gray-500 px-2 py-1 rounded h-8"
                 >
-                    <Plus size={16} />
+                    <GoPlus size={20} />
                     <span>Add a list</span>
                 </button>
             )}

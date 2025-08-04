@@ -1,6 +1,6 @@
 import React, { useContext, useState, useRef, useEffect } from 'react';
 import { MoreHorizontal, X } from 'react-feather';
-import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
+import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
 import { BoardContext } from '../context/BoardContext';
 import { RiDeleteBin5Fill, RiEdit2Line } from 'react-icons/ri';
 import { TbLocationShare } from 'react-icons/tb';

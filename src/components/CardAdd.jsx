@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { X, Plus } from 'react-feather';
 import { GoPlus } from "react-icons/go";
 
 const CardAdd = ({ getcard }) => {
@@ -41,7 +40,7 @@ const CardAdd = ({ getcard }) => {
                             className="hover:bg-gray-600 p-1 rounded"
                             title="Cancel"
                         >
-                            <X size={16} />
+                            <GoPlus size={20} />
                         </button>
                     </div>
                 </div>
@@ -50,7 +49,7 @@ const CardAdd = ({ getcard }) => {
                     onClick={() => setShow(true)}
                     className="flex items-center space-x-1 w-full text-sm text-white hover:bg-gray-500 px-2 py-1 rounded"
                 >
-                    <GoPlus size={16} />
+                    <GoPlus size={20} />
                     <span>Add a card</span>
                 </button>
             )}

@@ -33,7 +33,7 @@ const CardAdd = ({ getcard }) => {
                             onClick={handleSave}
                             className="bg-sky-600 text-white px-3 py-1 rounded hover:bg-sky-700"
                         >
-                            Add Card
+                            Add Notes
                         </button>
                         <button
                             onClick={handleClose}
@@ -50,7 +50,7 @@ const CardAdd = ({ getcard }) => {
                     className="flex items-center space-x-1 w-full text-sm text-white hover:bg-gray-500 px-2 py-1 rounded"
                 >
                     <GoPlus size={20} />
-                    <span>Add a card</span>
+                    <span>Add Notes</span>
                 </button>
             )}
         </div>

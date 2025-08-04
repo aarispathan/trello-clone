@@ -34,7 +34,7 @@ const AddList = ({ getlist }) => {
                             onClick={handleSave}
                             className="bg-sky-600 text-white px-3 py-1 rounded hover:bg-sky-700"
                         >
-                            Add List
+                            Add Title
                         </button>
                         <button
                             onClick={handleClose}
@@ -51,7 +51,7 @@ const AddList = ({ getlist }) => {
                     className="flex items-center justify-center w-full space-x-2 text-sm text-white hover:bg-gray-500 px-2 py-1 rounded h-8"
                 >
                     <GoPlus size={20} />
-                    <span>Add a list</span>
+                    <span>Add Notes Title</span>
                 </button>
             )}
         </div>

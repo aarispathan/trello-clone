@@ -100,8 +100,11 @@ const Main = () => {
     };
 
     return (
-        <div className="flex flex-col rounded-md m-1 w-full" style={{ backgroundColor: bdata.bgcolor }}>
-            <div className="p-3 bg-white/10 backdrop-blur-lg border border-white/20 rounded-md flex justify-between items-center w-full">
+        <div
+            className="flex flex-col rounded-md m-1 h-[calc(100vh-3rem)] w-full"
+            style={{ backgroundColor: bdata.bgcolor }}
+        >
+            <div className="p-3 bg-white/10 backdrop-blur-lg border-none rounded-md flex justify-between items-center w-full">
                 <h2 className="text-lg text-white">{bdata.name}</h2>
                 <div className="relative">
                     <button onClick={() => setShowShare(true)} className="bg-white text-gray-800 px-2 py-1 h-8 rounded flex items-center">
@@ -132,11 +135,17 @@ const Main = () => {
 
             <div className="p-3 overflow-y-auto">
                 <DragDropContext onDragEnd={onDragEnd}>
-                    <div className="flex gap-3 flex-nowrap overflow-x-auto pb-3">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 pb-3">
+
                         {bdata.list.map((list, listIndex) => (
-                            <div key={list.id} className="w-[280px] min-w-[280px] flex-shrink-0 bg-black rounded-md p-2">
+                            <div
+                                key={list.id}
+                                className="bg-black rounded-md p-2 h-fit"
+                            >
                                 <div className="flex justify-between items-center mb-2 relative">
-                                    <span className="text-white font-medium">{list.title}</span>
+                                    <span className="text-white font-medium text-sm sm:text-base">
+                                        {list.title}
+                                    </span>
 
                                     <div className="relative">
                                         <button
@@ -155,14 +164,15 @@ const Main = () => {
                                                         deleteList(list.id);
                                                         setOpenListMenuId(null);
                                                     }}
-                                                    className="flex gap-2 items-center w-full text-red-400 hover:text-red-500"
+                                                    className="flex gap-2 items-center w-full text-red-400 hover:text-red-500 text-xs sm:text-sm"
                                                 >
-                                                    Delete <RiDeleteBin5Fill />
+                                                    Delete <RiDeleteBin5Fill size={14} />
                                                 </button>
                                             </div>
                                         )}
                                     </div>
                                 </div>
+
                                 <Droppable droppableId={list.id.toString()}>
                                     {(provided, snapshot) => (
                                         <div
@@ -170,53 +180,65 @@ const Main = () => {
                                             {...provided.droppableProps}
                                             className={`space-y-2 pb-2 min-h-[50px] ${snapshot.isDraggingOver ? 'bg-zinc-800' : ''}`}
                                         >
-                                            {list.items.map((item, index) => (
-                                                <Draggable key={item.id} draggableId={item.id.toString()} index={index}>
-                                                    {(provided, snapshot) => (
-                                                        <div
-                                                            ref={provided.innerRef}
-                                                            {...provided.draggableProps}
-                                                            {...provided.dragHandleProps}
-                                                            className={`p-2 border rounded-md flex justify-between items-center gap-2 cursor-pointer ${snapshot.isDragging ? 'bg-zinc-600 border-gray-500' : 'bg-zinc-700 border-zinc-900 hover:border-gray-500'}`}
-                                                        >
-                                                            {editingCard.listId === list.id && editingCard.cardId === item.id ? (
-                                                                <input
-                                                                    type="text"
-                                                                    className="bg-zinc-800 text-white text-sm p-1 rounded w-full outline-none"
-                                                                    value={editedTitle}
-                                                                    autoFocus
-                                                                    onChange={(e) => setEditedTitle(e.target.value)}
-                                                                    onBlur={() => updateCardTitle(list.id, item.id, editedTitle)}
-                                                                    onKeyDown={(e) => {
-                                                                        if (e.key === 'Enter') updateCardTitle(list.id, item.id, editedTitle);
-                                                                    }}
-                                                                />
-                                                            ) : (
-                                                                <>
-                                                                    <span className="text-white text-sm flex-1">{item.title}</span>
-                                                                    <button
-                                                                        className="hover:bg-gray-600 p-1 rounded-sm"
-                                                                        onClick={() => {
-                                                                            setEditingCard({ listId: list.id, cardId: item.id });
-                                                                            setEditedTitle(item.title);
+                                            <div className="grid grid-cols-1 gap-2">
+                                                {list.items.map((item, index) => (
+                                                    <Draggable key={item.id} draggableId={item.id.toString()} index={index}>
+                                                        {(provided, snapshot) => (
+                                                            <div
+                                                                ref={provided.innerRef}
+                                                                {...provided.draggableProps}
+                                                                {...provided.dragHandleProps}
+                                                                className={`p-2 border rounded-md flex justify-between items-center gap-2 cursor-pointer 
+                            ${snapshot.isDragging ? 'bg-zinc-600 border-gray-500' : 'bg-zinc-700 border-zinc-900 hover:border-gray-500'}
+                            text-xs sm:text-sm`}
+                                                            >
+                                                                {editingCard.listId === list.id && editingCard.cardId === item.id ? (
+                                                                    <input
+                                                                        type="text"
+                                                                        className="bg-zinc-800 text-white text-xs sm:text-sm p-1 rounded w-full outline-none"
+                                                                        value={editedTitle}
+                                                                        autoFocus
+                                                                        onChange={(e) => setEditedTitle(e.target.value)}
+                                                                        onBlur={() => updateCardTitle(list.id, item.id, editedTitle)}
+                                                                        onKeyDown={(e) => {
+                                                                            if (e.key === 'Enter') updateCardTitle(list.id, item.id, editedTitle);
                                                                         }}
-                                                                    >
-                                                                        <RiEdit2Line size={16} className="text-white" />
-                                                                    </button>
-                                                                </>
-                                                            )}
-                                                        </div>
-                                                    )}
-                                                </Draggable>
-                                            ))}
+                                                                    />
+                                                                ) : (
+                                                                    <>
+                                                                        <span className="text-white flex-1 truncate">{item.title}</span>
+                                                                        <button
+                                                                            className="hover:bg-gray-600 p-1 rounded-sm"
+                                                                            onClick={() => {
+                                                                                setEditingCard({ listId: list.id, cardId: item.id });
+                                                                                setEditedTitle(item.title);
+                                                                            }}
+                                                                        >
+                                                                            <RiEdit2Line size={14} className="text-white" />
+                                                                        </button>
+                                                                    </>
+                                                                )}
+                                                            </div>
+                                                        )}
+                                                    </Draggable>
+                                                ))}
+                                            </div>
                                             {provided.placeholder}
                                         </div>
                                     )}
                                 </Droppable>
-                                <CardAdd getcard={(cardTitle) => addCard(cardTitle, listIndex)} />
+
+                                <CardAdd
+                                    getcard={(cardTitle) => addCard(cardTitle, listIndex)}
+                                    mobileClass="text-xs sm:text-sm"
+                                />
                             </div>
                         ))}
-                        <AddList getlist={addList} />
+
+                        <AddList
+                            getlist={addList}
+                            className="bg-black rounded-md p-2 h-fit min-w-[240px]"
+                        />
                     </div>
                 </DragDropContext>
             </div>

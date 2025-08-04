@@ -1,6 +1,5 @@
 import React, { useContext, useState } from 'react';
-import { ChevronLeft, Plus, X } from 'react-feather';
-import { Popover } from 'react-tiny-popover';
+import { Plus, X } from 'react-feather';
 import { BoardContext } from '../context/BoardContext';
 import { RiMenuFill, RiCloseLargeFill, RiDeleteBin2Fill, RiEdit2Line } from "react-icons/ri";
 import { toast, ToastContainer } from 'react-toastify';
@@ -15,7 +14,7 @@ const Sidebar = () => {
 
     const [boardData, setBoardData] = useState(blankBoard);
     const [collapsed, setCollapsed] = useState(false);
-    const [showPopover, setShowPopover] = useState(false);
+    const [isModalOpen, setIsModalOpen] = useState(false);
     const { allboard, setAllBoard } = useContext(BoardContext);
     const [editingIndex, setEditingIndex] = useState(null);
     const [editedBoardName, setEditedBoardName] = useState('');
@@ -26,16 +25,9 @@ const Sidebar = () => {
     };
 
     const addBoard = () => {
+        console.log("Creating board:", boardData);
         if (!boardData.name.trim()) {
-            toast.warn('Please enter a board title!', {
-                position: 'top-center',
-                autoClose: 3000,
-                hideProgressBar: true,
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: true,
-                theme: 'dark',
-            });
+            toast.warn('Please enter a board title!');
             return;
         }
 
@@ -45,14 +37,19 @@ const Sidebar = () => {
             list: [],
         };
 
-        const updatedBoard = { ...allboard };
-        updatedBoard.boards.push(newBoard);
-        updatedBoard.active = updatedBoard.boards.length - 1;
+        const updatedBoards = [...allboard.boards, newBoard];
+        const updatedBoard = {
+            boards: updatedBoards,
+            active: updatedBoards.length - 1,
+        };
+
+        console.log("Updated AllBoard:", updatedBoard);
         setAllBoard(updatedBoard);
         setBoardData(blankBoard);
-        setShowPopover(false);
-    };
+        setIsModalOpen(false);
 
+        toast.success('Board created!');
+    };
 
     const deleteBoard = (indexToDelete) => {
         const updatedBoards = allboard.boards.filter((_, i) => i !== indexToDelete);
@@ -76,7 +73,6 @@ const Sidebar = () => {
 
         toast.success("Board deleted successfully!", {
             position: "bottom-left",
-
             autoClose: 2000,
         });
     };
@@ -90,7 +86,6 @@ const Sidebar = () => {
         if (!editedBoardName.trim()) {
             toast.warn('Board name cannot be empty!', {
                 position: "bottom-left",
-
                 autoClose: 2000,
             });
             return;
@@ -105,14 +100,14 @@ const Sidebar = () => {
 
         toast.success('Board name updated!', {
             position: "bottom-left",
-
             autoClose: 2000,
         });
     };
 
     return (
         <div
-            className={`bg-[#121417] h-[calc(100vh-3rem)] border-r m-1 rounded-md border-[#9fadbc29] transition-all duration-300 flex-shrink-0 ${collapsed ? 'w-[60px]' : 'w-[280px]'}`}
+            className={`${collapsed ? 'relative w-[60px] md:relative' : 'absolute w-[280px] md:relative'
+                } z-20 bg-[#121417] h-[calc(100vh-3rem)] border-r m-1 rounded-md border-[#9fadbc29] transition-all duration-300 flex-shrink-0`}
         >
             <ToastContainer />
             {collapsed ? (
@@ -135,7 +130,7 @@ const Sidebar = () => {
                             <RiCloseLargeFill size={18} className="text-white" />
                         </button>
                     </div>
-                    <div className="mt-3">
+                    <div className="mt-3 relative">
                         <h6 className="text-gray-300 text-sm font-medium mb-1">Your Boards</h6>
                         <ul className="text-sm text-white space-y-1">
                             {allboard.boards.map((board, i) => (
@@ -150,7 +145,7 @@ const Sidebar = () => {
                                             onChange={(e) => setEditedBoardName(e.target.value)}
                                             onBlur={() => handleSaveEdit(i)}
                                             onKeyDown={(e) => e.key === 'Enter' && handleSaveEdit(i)}
-                                            className="bg-zinc-800 text-white p-1 rounded text-sm w-full mr-2"
+                                            className="bg-zinc-800 text-white outline-none bg-transparent p-1 rounded text-sm w-full mr-2"
                                             autoFocus
                                         />
                                     ) : (
@@ -159,9 +154,10 @@ const Sidebar = () => {
                                             className="flex items-center py-2 w-full text-left flex-grow"
                                         >
                                             <span
-                                                className="w-5 h-5 rounded-sm mr-2 inline-block"
+                                                className="w-5 h-5 border-2 border-white rounded-sm mr-2 inline-block"
                                                 style={{ backgroundColor: board.bgcolor }}
                                             />
+
                                             <span>{board.name}</span>
                                         </button>
                                     )}
@@ -187,67 +183,64 @@ const Sidebar = () => {
                                 </li>
                             ))}
                         </ul>
-                        <Popover
-                            isOpen={showPopover}
-                            align="start"
-                            positions={['bottom', 'right']}
-                            padding={10}
-                            reposition={true}
-                            content={
-                                <div className="ml-2 w-60 bg-slate-600 text-white rounded relative z-10 p-4 shadow-lg">
-                                    <button
-                                        onClick={() => setShowPopover(false)}
-                                        className="absolute right-2 top-2 text-white hover:bg-gray-500 p-1 rounded"
-                                    >
-                                        <X size={16} />
-                                    </button>
-                                    <h4 className="text-lg font-semibold text-center mb-2">Create Board</h4>
-                                    <img
-                                        src="https://placehold.co/200x120/png"
-                                        alt="placeholder"
-                                        className="rounded"
-                                    />
-                                    <div className="mt-4 space-y-2">
-                                        <label className="block text-sm font-medium">
-                                            Board Title <span className="text-red-400">*</span>
-                                        </label>
-                                        <input
-                                            value={boardData.name}
-                                            onChange={(e) => setBoardData({ ...boardData, name: e.target.value })}
-                                            type="text"
-                                            className="h-8 px-2 w-full bg-gray-700 rounded outline-none"
-                                            onKeyDown={(e) => e.key === 'Enter' && addBoard()}
-                                        />
-                                        <label className="block text-sm font-medium">Board Color</label>
-                                        <div className="flex flex-wrap gap-2 mt-1">
-                                            {["#3e96F4", "#81654F", "#AA75B8", "#708090", "#1D3727", "#949A89", "#A39FE1", "#B1AE9F"].map((color) => (
-                                                <button
-                                                    key={color}
-                                                    onClick={() => setBoardData({ ...boardData, bgcolor: color })}
-                                                    className={`w-6 h-6 rounded-full border-2 ${boardData.bgcolor === color ? 'border-white' : 'border-transparent'}`}
-                                                    style={{ backgroundColor: color }}
-                                                    title={color}
-                                                />
-                                            ))}
-                                        </div>
-                                        <button
-                                            onClick={addBoard}
-                                            className="w-full h-8 mt-2 rounded bg-slate-700 hover:bg-gray-500 transition"
-                                        >
-                                            Create
-                                        </button>
-                                    </div>
-                                </div>
-                            }
-                        >
+                        <div className="relative mt-3">
                             <button
-                                onClick={() => setShowPopover(!showPopover)}
-                                className="hover:bg-slate-600 text-white p-1 rounded-sm flex items-center w-full justify-center space-x-2 mt-3"
+                                onClick={() => setIsModalOpen(true)}
+                                className="hover:bg-slate-600 text-white p-1 rounded-sm flex items-center w-full justify-center space-x-2"
                             >
                                 <span>Add New Board</span>
                                 <Plus size={16} />
                             </button>
-                        </Popover>
+
+                            {isModalOpen && (
+                                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[9999]">
+                                    <div className="w-80 bg-slate-600 text-white rounded p-4 relative">
+                                        <button
+                                            onClick={() => setIsModalOpen(false)}
+                                            className="absolute right-2 top-2 text-white hover:bg-gray-500 p-1 rounded"
+                                        >
+                                            <X size={16} />
+                                        </button>
+                                        <h4 className="text-lg font-semibold mb-2">Create Board</h4>
+                                        <div className="mt-4 space-y-2">
+                                            <label htmlFor="boardName" className="block text-sm font-medium">
+                                                Board Title <span className="text-red-400">*</span>
+                                            </label>
+                                            <input
+                                                id="boardName"
+                                                name="boardName"
+                                                type="text"
+                                                value={boardData.name}
+                                                onChange={(e) => setBoardData({ ...boardData, name: e.target.value })}
+                                                onKeyDown={(e) => e.key === 'Enter' && addBoard()}
+                                                className="h-8 px-2 w-full bg-gray-700 rounded outline-none"
+                                            />
+
+                                            <label className="block text-sm font-medium mb-1">Board Color</label>
+                                            <div role="radiogroup" aria-label="Board Color" className="flex flex-wrap gap-2 mt-1">
+                                                {["#3e96F4", "#81654F", "#AA75B8", "#708090", "#1D3727", "#949A89", "#A39FE1", "#B1AE9F"].map((color) => (
+                                                    <button
+                                                        key={color}
+                                                        type="button"
+                                                        onClick={() => setBoardData({ ...boardData, bgcolor: color })}
+                                                        className={`w-6 h-6 rounded-full border-2 ${boardData.bgcolor === color ? 'border-white' : 'border-transparent'}`}
+                                                        style={{ backgroundColor: color }}
+                                                        title={`Select ${color}`}
+                                                        aria-label={`Select ${color}`}
+                                                    />
+                                                ))}
+                                            </div>
+                                            <button
+                                                onClick={addBoard}
+                                                className="w-full h-8 mt-2 rounded bg-slate-700 hover:bg-gray-500 transition"
+                                            >
+                                                Create
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+                        </div>
                     </div>
                 </div>
             )}
